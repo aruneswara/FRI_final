@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
+set(CMAKE_CXX_COMPILER /usr/bin/g++-8)
 project(final)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
@@ -10,16 +11,16 @@ project(final)
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
-  read_text
   roscpp
   sensor_msgs
-  std_msgs
   std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
-
+find_package(OpenCV REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_search_module(TESSERACT REQUIRED tesseract)
+pkg_search_module(LEPTONICA REQUIRED lept)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -109,7 +110,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES final
-#  CATKIN_DEPENDS cv_bridge image_transport read_text roscpp sensor_msgs std_msgs std_msgs
+  CATKIN_DEPENDS cv_bridge image_transport read_text roscpp sensor_msgs std_msgs std_msgs
 #  DEPENDS system_lib
 )
 
@@ -119,11 +120,10 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
-)
-
+include_directories(${catkin_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(${TESSERACT_INCLUDE_DIRS})
+include_directories(${LEPTONICA_INCLUDE_DIRS})
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/final.cpp
@@ -137,7 +137,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/final_node.cpp)
+add_executable(final src/final.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -150,10 +150,11 @@ include_directories(
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
-
+target_link_libraries(final ${OpenCV_LIBS} ${catkin_LIBRARIES})
+target_link_libraries(final ${TESSERACT_LIBRARIES})
+target_link_libraries(final ${LEPTONICA_LIBRARIES})
+target_link_libraries(final stdc++fs)
+set_property(TARGET final PROPERTY CXX_STANDARD 17)
 #############
 ## Install ##
 #############
