@@ -92,6 +92,6 @@ int main() {
       for(auto x: text)
         std::cout << x << " ";
       std::cout << std::endl;
-      std::cout << "File: " << file << std::endl << "x: " << x << " --- y: " << y << std::endl;
+      std::cout << "File: " << file << std::endl << "x: " << x << " --- y: " << y << std::endl << std::endl;
   }
 }
